@@ -38,6 +38,25 @@ func TestGetPwNam(t *testing.T) {
 	}
 }
 
+func TestGetGrGIDSlice(t *testing.T) {
+	test.DropPrivilege(t)
+	defer test.ResetPrivilege(t)
+	// On RHEL: the groups root, bin, daemon, sys, adm, tty
+	// Let's assume that at least some exist on all Linux distributions.
+	gSlice := GetGrGIDSlice([]int{0, 1, 2, 3, 4, 5})
+	if gSlice == nil {
+		t.Fatalf("Slice of groups is nil")
+	}
+	if len(gSlice) < 2 {
+		t.Fatalf("Failed to get at least 2 groups")
+	}
+	for i, g := range gSlice {
+		if g == nil {
+			t.Fatalf("Group %d is nil", i)
+		}
+	}
+}
+
 func TestGetGrGID(t *testing.T) {
 	test.DropPrivilege(t)
 	defer test.ResetPrivilege(t)

@@ -243,12 +243,8 @@ func (e *EngineOperations) prepareUserCaps(enforced bool) error {
 			return err
 		}
 
-		for _, g := range groups {
-			gr, err := user.GetGrGID(uint32(g))
-			if err != nil {
-				sylog.Debugf("Ignoring group %d: %s", g, err)
-				continue
-			}
+		sl := user.GetGrGIDSlice(groups)
+		for _, gr := range sl {
 			authorizedCaps, unauthorizedCaps := capConfig.CheckGroupCaps(gr.Name, caps)
 			if len(authorizedCaps) > 0 {
 				sylog.Debugf("%s group capabilities %s added", gr.Name, strings.Join(authorizedCaps, ","))
@@ -350,12 +346,8 @@ func (e *EngineOperations) prepareRootCaps() error {
 			return fmt.Errorf("while getting groups: %s", err)
 		}
 
-		for _, g := range groups {
-			gr, err := user.GetGrGID(uint32(g))
-			if err != nil {
-				sylog.Debugf("Ignoring group %d: %s", g, err)
-				continue
-			}
+		sl := user.GetGrGIDSlice(groups)
+		for _, gr := range sl {
 			caps := capConfig.ListGroupCaps(gr.Name)
 			commonCaps = append(commonCaps, caps...)
 			sylog.Debugf("%s group capabilities %s added", gr.Name, strings.Join(caps, ","))

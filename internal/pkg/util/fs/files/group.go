@@ -69,12 +69,8 @@ func Group(path string, uid int, gids []int) (content []byte, err error) {
 		content = append(content, '\n')
 	}
 
-	for _, gid := range groups {
-		grInfo, err := user.GetGrGID(uint32(gid))
-		if err != nil || grInfo == nil {
-			sylog.Verbosef("Skipping GID %d as group entry doesn't exist.\n", gid)
-			continue
-		}
+	sl := user.GetGrGIDSlice(groups)
+	for _, grInfo := range sl {
 		groupLine := fmt.Sprintf("%s:x:%d:%s\n", grInfo.Name, grInfo.GID, pwInfo.Name)
 		content = append(content, []byte(groupLine)...)
 	}
